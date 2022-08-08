@@ -37,11 +37,49 @@ public class Scene : MonoBehaviour
         this.debug.Ray(new Ray(Vector3.zero, NormalizedImageToWorldCoord(0f, 0f)), Color.blue);
         
         // Add more rays to visualise here...
+        this.debug.Ray(new Ray(Vector3.zero, NormalizedImageToWorldCoord(1f, 0f)), Color.blue);
+        this.debug.Ray(new Ray(Vector3.zero, NormalizedImageToWorldCoord(0f, 1f)), Color.blue);
+        this.debug.Ray(new Ray(Vector3.zero, NormalizedImageToWorldCoord(1f, 1f)), Color.blue);
+
+        // Debug rays
+        // for (int i=1; i<=this.image.Width; i++) {
+        //     for (int j=1; j<=this.image.Height; j++) {
+        //         this.debug.Ray(WorldRay(i,j), Color.white);
+        //     }
+        // }
+
+        // Debug ray (1,1)
+        // this.debug.Ray(WorldRay(1,1), Color.white);
     }
 
     private void Render()
     {
         // Render the image here...
+        for (int i=1; i<=this.image.Width; i++) {
+            for (int j=1; j<=this.image.Height; j++) {
+                bool blackPixel = true;
+                foreach (var sceneEntity in FindObjectsOfType<SceneEntity>())
+                {
+                    Ray ray = WorldRay(i,j);
+                    // Note: sceneEntity could actually be a Triangle OR Plane OR Sphere.
+                    RaycastHit? hit = sceneEntity?.Intersect(ray);
+                    if (hit != null)
+                    {
+                        this.image.SetPixel(i-1,j-1, sceneEntity.Color());
+                        blackPixel = false;
+                    }
+                }
+                if (blackPixel)
+                {
+                    this.image.SetPixel(i-1,j-1, Color.black);
+                }
+            }
+        }
+    }
+
+    private Ray WorldRay(int x, int y)
+    {
+        return new Ray(Vector3.zero, NormalizedImageToWorldCoord((x - 0.5f) * (1/(float)this.image.Width) * 1f, (y - 0.5f) * (1/(float)this.image.Height) * 1f));
     }
 
     private Vector3 NormalizedImageToWorldCoord(float x, float y)

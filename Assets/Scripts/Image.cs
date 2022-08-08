@@ -25,7 +25,7 @@ public class Image : MonoBehaviour
             filterMode = FilterMode.Point
         };
 
-        GeneratePixelGrid();
+        // GeneratePixelGrid();
         GenerateImage();
     }
 
